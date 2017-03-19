@@ -624,7 +624,7 @@ class Upluad_main(Frame):
 
         #-------- 22nd row -------------
 
-        self.clear_button = ttk.Button(root, text="Delete Student Database", command=lambda: self.delete_database())
+        self.clear_button = ttk.Button(root, text="Delete Student Database", command=lambda: self.delete_database() if tkMessageBox.askquestion("Confirmation", "Are You Sure?", icon='warning') == "yes" else tkMessageBox.showinfo("Deleting Student Database", "Nothing was Deleted")) 
         self.clear_button.grid(row=22, column=0, columnspan=2)
 
         self.save_button = ttk.Button(root, text="Save", command=lambda: self.db_conn.commit())
@@ -632,7 +632,8 @@ class Upluad_main(Frame):
 
         #--------- 23st row ------------
 
-        self.clear2_button = ttk.Button(root, text="Delete Tutors Database", command=lambda: self.delete_database_tutors())
+                self.clear2_button = ttk.Button(root, text="Delete Tutor Database", command=lambda: self.delete_database_tutors() if tkMessageBox.askquestion("Confirmation", "Are You Sure?", icon='warning') == "yes" else tkMessageBox.showinfo("Deleting Tutor Database", "Nothing was Deleted"))
+
         self.clear2_button.grid(row=23, column=0, columnspan=2, sticky=W+E)
 
 
