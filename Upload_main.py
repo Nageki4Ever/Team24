@@ -96,12 +96,12 @@ class Upluad_main(Frame):
             msg = MIMEText("""Dear Student: Your tutor for the year is {}""".format(i[0]))
             msg['Subject'] = 'Testing the Email - Python'
             # me == the sender's email address
-            # family = the list of all recipients' email addresses
+            # emails = the list of all recipients' email addresses
             msg['From'] = me
             msg['To'] = '\n'.join(''.join(elems) for elems in emails)
             msg.preamble = 'Your Tutor'
 
-            # Send the email via our own SMTP server.
+            
 
             server.sendmail(me, emails, msg.as_string()) 
 
