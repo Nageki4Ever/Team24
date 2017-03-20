@@ -4,10 +4,16 @@ TEAM 24
 '''
 from tkinter import *
 from uploads import *
+from tkinter import messagebox as tkMessageBox
 import xlrd
+import smtplib 
 from tkinter import filedialog
 from tkinter import ttk
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import sqlite3
+ 
  
 
 class Upluad_main(Frame):
@@ -67,6 +73,39 @@ class Upluad_main(Frame):
         self.setup_db()
         self.update_listbox()
         self.update_tutor_listbox()
+      
+    def getemails(self, tutorname): 
+        self.theCursor.execute("SELECT UEmail FROM Students WHERE TUTOR = '{}'".format(tutorname[0]))
+        
+        return self.theCursor.fetchall()
+
+    def send_tutor_email(self):
+        self.theCursor.execute("SELECT TUTOR FROM Students") 
+        tutor_list = self.theCursor.fetchall()
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls() 
+        for i in tutor_list:
+            
+            server.login('dqscoursework@gmail.com', 'team24coursework')
+            
+            me = "dqscoursework@gmail.com"
+            emails = self.getemails(i)
+
+            # Create the container (outer) email message.
+            msg = MIMEMultipart()
+            msg = MIMEText("""Dear Student: Your tutor for the year is {}""".format(i[0]))
+            msg['Subject'] = 'Testing the Email - Python'
+            # me == the sender's email address
+            # family = the list of all recipients' email addresses
+            msg['From'] = me
+            msg['To'] = '\n'.join(''.join(elems) for elems in emails)
+            msg.preamble = 'Your Tutor'
+
+            # Send the email via our own SMTP server.
+
+            server.sendmail(me, emails, msg.as_string()) 
+
+        server.quit()  
 
     # ------------------------------------ Search ------------------------------------
 #gets value from user and with it calls show_studets function
@@ -523,9 +562,8 @@ class Upluad_main(Frame):
 
         self.seach_button = ttk.Button(root, text="Search", command=lambda: self.search_student())
         self.seach_button.grid(row=3, column=8, pady=(20, 0), sticky=W)
-
-
-        # ----- 6th Row ----- 
+        
+         # ----- 6th Row ----- 
 
         SCode_label = Label(root, text="Student Code")
         SCode_label.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky=W)
@@ -618,12 +656,12 @@ class Upluad_main(Frame):
 
         #-------- 20th row -------------
 
-        self.clear_button = ttk.Button(root, text="Delete Student Database", command=lambda: self.delete_database())
+        self.clear_button = ttk.Button(root, text="Delete Student Database", command=lambda: self.delete_database() if tkMessageBox.askquestion("Confirmation", "Are You Sure?", icon='warning') == "yes" else tkMessageBox.showinfo("Deleting Student Database", "Nothing was Deleted")) 
         self.clear_button.grid(row=20, column=2, columnspan=2, sticky=W+E)
 
         #-------- 21st row -------------
 
-        self.clear2_button = ttk.Button(root, text="Delete Tutors Database", command=lambda: self.delete_database_tutors())
+        self.clear2_button = ttk.Button(root, text="Delete Tutor Database", command=lambda: self.delete_database_tutors() if tkMessageBox.askquestion("Confirmation", "Are You Sure?", icon='warning') == "yes" else tkMessageBox.showinfo("Deleting Tutor Database", "Nothing was Deleted"))
         self.clear2_button.grid(row=21, column=2, columnspan=2, sticky=W+E)
 
         #-------- 22nd row -------------
